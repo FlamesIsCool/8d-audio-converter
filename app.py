@@ -12,8 +12,8 @@ os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 os.makedirs(OUTPUT_FOLDER, exist_ok=True)
 
 # Use local ffmpeg binaries in bin/ folder
-AudioSegment.converter = "./bin/ffmpeg"
-AudioSegment.ffprobe = "./bin/ffprobe"
+AudioSegment.converter = "ffmpeg"
+AudioSegment.ffprobe = "ffprobe"
 
 def apply_8d_effect(audio_path, output_path):
     audio = AudioSegment.from_file(audio_path)
