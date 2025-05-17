@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>8D Audio Converter</title>
+  <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+  <div class="container">
+    <h1>🎧 8D Audio Converter</h1>
+    <form method="POST" enctype="multipart/form-data">
+      <input type="file" name="audio" accept=".mp3,.wav" required>
+      <button type="submit">Convert</button>
+    </form>
+    {% if download_link %}
+      <p><a href="{{ download_link }}">⬇️ Download 8D Audio</a></p>
+    {% endif %}
+  </div>
+</body>
+</html>
