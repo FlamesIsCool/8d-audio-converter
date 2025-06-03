@@ -1,4 +1,4 @@
-from flask import Flask, request, send_file, render_template_string
+from flask import Flask, request, send_file, render_template_string, send_from_directory
 from pydub import AudioSegment
 import os
 
@@ -34,5 +34,11 @@ def index():
 def download(filename):
     return send_file(filename, as_attachment=True)
 
+@app.route('/style.css')
+def style():
+    return send_from_directory('.', 'style.css')
+
 if __name__ == "__main__":
-    app.run(debug=True)
+    host = os.environ.get('HOST', '0.0.0.0')
+    port = int(os.environ.get('PORT', 5000))
+    app.run(host=host, port=port, debug=True)
