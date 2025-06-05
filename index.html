@@ -186,7 +186,7 @@
                             <div class="relative h-4 mb-6">
                                 <div class="slider-track absolute inset-0"></div>
                                 <input type="range" min="1" max="5" value="{{ speed or 3 }}" name="speed" class="absolute w-full h-full opacity-0 cursor-pointer" id="speedSlider">
-                                <div class="slider-thumb absolute top-1/2 transform -translate-y-1/2" style="left: 50%"></div>
+                                <div class="slider-thumb absolute top-1/2 transform -translate-y-1/2" style="left: {{ (((speed|default(3)|float - 1) / 4) * 100)|round(0) }}%"></div>
                             </div>
 
                             <div class="flex justify-between items-center mb-2">
@@ -200,14 +200,14 @@
                             </div>
                             <div class="flex space-x-4 mb-6">
                                 <label class="flex items-center cursor-pointer">
-                                    <input type="radio" name="direction" value="clockwise" class="hidden" checked>
+                                    <input type="radio" name="direction" value="clockwise" class="hidden" {% if direction != 'counterclockwise' %}checked{% endif %}>
                                     <div class="w-5 h-5 rounded-full border-2 border-indigo-400 mr-2 flex items-center justify-center">
                                         <div class="w-2.5 h-2.5 rounded-full bg-indigo-400 direction-indicator"></div>
                                     </div>
                                     <span>Clockwise</span>
                                 </label>
                                 <label class="flex items-center cursor-pointer">
-                                    <input type="radio" name="direction" value="counterclockwise" class="hidden">
+                                    <input type="radio" name="direction" value="counterclockwise" class="hidden" {% if direction == 'counterclockwise' %}checked{% endif %}>
                                     <div class="w-5 h-5 rounded-full border-2 border-indigo-400 mr-2 flex items-center justify-center">
                                         <div class="w-2.5 h-2.5 rounded-full bg-transparent direction-indicator"></div>
                                     </div>
@@ -223,8 +223,8 @@
                             </div>
                             <div class="relative h-4 mb-6">
                                 <div class="slider-track absolute inset-0"></div>
-                                <input type="range" min="0" max="100" value="75" class="absolute w-full h-full opacity-0 cursor-pointer" id="intensitySlider">
-                                <div class="slider-thumb absolute top-1/2 transform -translate-y-1/2" style="left: 75%"></div>
+                                <input type="range" min="0" max="100" value="{{ intensity or 75 }}" name="intensity" class="absolute w-full h-full opacity-0 cursor-pointer" id="intensitySlider">
+                                <div class="slider-thumb absolute top-1/2 transform -translate-y-1/2" style="left: {{ (intensity|default(75)|float) }}%"></div>
                             </div>
 
                             <div class="flex justify-between items-center mb-2">
@@ -233,8 +233,8 @@
                             </div>
                             <div class="relative h-4 mb-6">
                                 <div class="slider-track absolute inset-0"></div>
-                                <input type="range" min="0" max="100" value="40" class="absolute w-full h-full opacity-0 cursor-pointer" id="reverbSlider">
-                                <div class="slider-thumb absolute top-1/2 transform -translate-y-1/2" style="left: 40%"></div>
+                                <input type="range" min="0" max="100" value="{{ reverb or 40 }}" name="reverb" class="absolute w-full h-full opacity-0 cursor-pointer" id="reverbSlider">
+                                <div class="slider-thumb absolute top-1/2 transform -translate-y-1/2" style="left: {{ (reverb|default(40)|float) }}%"></div>
                             </div>
                         </div>
                     </div>
@@ -251,7 +251,7 @@
                                 </div>
                             </label>
                             <label class="inline-flex items-center cursor-pointer">
-                                <input type="checkbox" class="hidden" id="bassBoostToggle">
+                                <input type="checkbox" name="bass_boost" class="hidden" id="bassBoostToggle" {% if bass_boost %}checked{% endif %}>
                                 <div class="w-12 h-6 rounded-full bg-gray-700 relative">
                                     <div class="toggle-dot absolute w-5 h-5 bg-white rounded-full top-0.5 left-0.5 transition-transform duration-300"></div>
                                 </div>
@@ -414,48 +414,61 @@
 
         const speedLabels = ['Very Slow', 'Slow', 'Medium', 'Fast', 'Very Fast'];
 
-        speedSlider.addEventListener('input', () => {
+        function updateSpeedDisplay() {
             const value = speedSlider.value;
             speedValue.textContent = speedLabels[value - 1];
             const percentage = ((value - 1) / 4) * 100;
             speedSlider.nextElementSibling.style.left = `${percentage}%`;
-        });
+        }
 
-        intensitySlider.addEventListener('input', () => {
+        updateSpeedDisplay();
+        speedSlider.addEventListener('input', updateSpeedDisplay);
+
+        function updateIntensityDisplay() {
             const value = intensitySlider.value;
             intensityValue.textContent = `${value}%`;
             intensitySlider.nextElementSibling.style.left = `${value}%`;
-        });
+        }
 
-        reverbSlider.addEventListener('input', () => {
+        updateIntensityDisplay();
+        intensitySlider.addEventListener('input', updateIntensityDisplay);
+
+        function updateReverbDisplay() {
             const value = reverbSlider.value;
             reverbValue.textContent = `${value}%`;
             reverbSlider.nextElementSibling.style.left = `${value}%`;
-        });
+        }
+
+        updateReverbDisplay();
+        reverbSlider.addEventListener('input', updateReverbDisplay);
 
         // Radio buttons
         const directionRadios = document.querySelectorAll('input[name="direction"]');
         const directionIndicators = document.querySelectorAll('.direction-indicator');
 
-        directionRadios.forEach((radio, index) => {
-            radio.addEventListener('change', () => {
-                directionIndicators.forEach(indicator => {
-                    indicator.classList.remove('bg-indigo-400');
-                    indicator.classList.add('bg-transparent');
-                });
-
+        function updateDirectionDisplay() {
+            directionIndicators.forEach(indicator => {
+                indicator.classList.remove('bg-indigo-400');
+                indicator.classList.add('bg-transparent');
+            });
+            directionRadios.forEach((radio, index) => {
                 if (radio.checked) {
                     directionIndicators[index].classList.remove('bg-transparent');
                     directionIndicators[index].classList.add('bg-indigo-400');
                 }
             });
+        }
+
+        updateDirectionDisplay();
+        directionRadios.forEach(radio => {
+            radio.addEventListener('change', updateDirectionDisplay);
         });
 
         // Toggle switch
         const bassBoostToggle = document.getElementById('bassBoostToggle');
         const toggleDot = document.querySelector('.toggle-dot');
 
-        bassBoostToggle.addEventListener('change', () => {
+        function updateBassBoostDisplay() {
             if (bassBoostToggle.checked) {
                 toggleDot.classList.add('translate-x-6');
                 toggleDot.parentElement.classList.add('bg-indigo-600');
@@ -465,7 +478,10 @@
                 toggleDot.parentElement.classList.remove('bg-indigo-600');
                 toggleDot.parentElement.classList.add('bg-gray-700');
             }
-        });
+        }
+
+        updateBassBoostDisplay();
+        bassBoostToggle.addEventListener('change', updateBassBoostDisplay);
 
         // Preview button
         previewBtn.addEventListener('click', () => {
