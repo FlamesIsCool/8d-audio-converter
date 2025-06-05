@@ -20,3 +20,32 @@ button {
   color: #000;
   cursor: pointer;
 }
+.speed-input {
+  margin: 15px 0;
+}
+.speed-input label {
+  display: block;
+  margin-bottom: 5px;
+}
+
+#progress-container {
+  width: 100%;
+  background: #333;
+  height: 10px;
+  border-radius: 5px;
+  overflow: hidden;
+  margin-top: 20px;
+  display: none;
+}
+
+#progress-bar {
+  width: 0%;
+  height: 100%;
+  background: #00ffff;
+  animation: progress 2s linear infinite;
+}
+
+@keyframes progress {
+  0% { width: 0%; }
+  100% { width: 100%; }
+}
